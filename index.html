@@ -1,0 +1,217 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WonderSpark • Task Cue MVP</title><style>:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#24253a;background:#f2f0ed}*{box-sizing:border-box}body{margin:0;padding:24px}.layout{max-width:980px;margin:auto;display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:28px}.phone{background:#fff;border:9px solid #292a38;border-radius:38px;min-height:690px;padding:24px;box-shadow:0 20px 50px #2222}.brand{font-size:13px;letter-spacing:.13em;font-weight:800;color:#6556a7}.eyebrow{font-size:12px;color:#777}h1{font-size:27px;line-height:1.15;margin:18px 0 10px}p{line-height:1.5}button,select,input,textarea{font:inherit}button{border:1px solid #ddd9ed;background:#fff;border-radius:14px;padding:13px;cursor:pointer;text-align:left}button:hover{border-color:#7964d5}button.primary{background:#6854bd;color:#fff;border:0;text-align:center;font-weight:700;width:100%;margin-top:12px}button.secondary{width:100%;text-align:center}.choices{display:grid;gap:10px;margin:20px 0}.choice{display:flex;justify-content:space-between;align-items:center;width:100%}.muted{color:#686879;font-size:13px}.cue{height:240px;border-radius:22px;background:linear-gradient(140deg,#d6d0e6,#f9e6d5);display:grid;place-items:center;position:relative;overflow:hidden}.cue:before{content:'';position:absolute;inset:17px;border:2px dashed #fff9;border-radius:15px}.object{background:#fff;box-shadow:0 9px 25px #4a3b5a33;border-radius:22px;padding:28px 36px;text-align:center;font-size:46px;z-index:1}.object small{display:block;font-size:12px;color:#555}.overlay{position:absolute;bottom:10px;right:10px;background:#2b2945e6;color:white;padding:8px 12px;border-radius:10px;font-size:12px}input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin:6px 0 13px;background:white}label{font-size:13px;font-weight:700}.task{border:1px solid #e4e1eb;border-radius:15px;padding:13px;margin:9px 0}.task strong{display:block}.task small{color:#777}.task button{padding:7px 12px;margin-top:9px;font-size:13px}.pill{display:inline-block;background:#efebfa;color:#5946a4;border-radius:50px;padding:5px 9px;font-size:12px}.bar{height:8px;border-radius:9px;background:#eee;overflow:hidden;margin:16px 0}.bar div{height:100%;background:#7c68c8;transition:width .2s}.side{padding:15px 0}.side h2{margin-top:0}.metric{display:inline-block;padding:15px;background:white;border-radius:15px;margin:5px 5px 5px 0;min-width:130px}.metric b{font-size:24px;display:block}.hidden{display:none}.back{border:0;padding:0;color:#6556a7;margin-top:12px}.check{display:flex;gap:10px;align-items:center}.check input{width:auto;margin:0}@media(max-width:750px){body{padding:10px}.layout{display:block}.phone{max-width:440px;margin:auto;min-height:650px}.side{max-width:440px;margin:20px auto}}body,.phone,.side,#screen{color:#24253a!important;color-scheme:light}h1,h2,h3,p,b,strong,small,label,.task,.choice{color:#24253a}button:not(.primary){color:#24253a;background:#fff}button.primary{color:#fff!important}select,input,textarea{color:#24253a!important;background:#fff!important}.muted,.eyebrow,.task small{color:#555568!important}.quest-banner{padding:15px;border:2px solid #7964d5;background:#f4efff;border-radius:16px;margin:16px 0}.quest-banner strong{display:block;font-size:19px}.quest-stamp{font-size:13px;font-weight:800;color:#5946a4}.quest-nav{width:100%;margin:10px 0 4px;background:#eee9fc!important;color:#47368d!important;font-weight:750;text-align:center}.quest-actions{display:flex;gap:8px;flex-wrap:wrap}.quest-actions button{flex:1}.danger{border-color:#d7a1a1!important;color:#963c43!important}.wizard{font-size:65px;line-height:1.1}.object small{margin-top:8px}.quest-empty{padding:18px;background:#f7f4fd;border-radius:14px}  
+/* Persistent simulated AR scene: choices are anchored around the mentor. */
+.ar-stage{position:relative;min-height:480px;border-radius:24px;overflow:hidden;background:radial-gradient(circle at 50% 44%,#f8e8df 0%,#e8dced 48%,#c8c0da 100%);border:1px solid #cfc4dc;padding:15px}
+.ar-stage:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 37px,#fff2 38px 39px),linear-gradient(transparent 75%,#b2a6a455);pointer-events:none}
+.ar-mentor{position:absolute;top:145px;left:50%;transform:translateX(-50%);width:132px;height:155px;border-radius:24px;background:#fff9;display:grid;place-content:center;text-align:center;box-shadow:0 12px 30px #493e6633;z-index:1}
+.ar-mentor .wizard{font-size:69px}.ar-mentor small{font-size:10px;font-weight:800;color:#46386e}
+.ar-tag{position:absolute;top:10px;left:12px;z-index:3;background:#27213fdd;color:white;padding:6px 10px;border-radius:30px;font-size:10px}
+.ar-float{position:absolute;z-index:3;max-width:44%;padding:12px 9px;border:1px solid #b8a5e4!important;background:#fffef8ed!important;box-shadow:0 7px 17px #48325d30;text-align:center!important;color:#32264c!important;font-weight:750;font-size:13px}
+.ar-float small{display:block;font-size:10px;color:#675d79}
+.ar-float.one{left:4%;top:80px}.ar-float.two{right:4%;top:80px}.ar-float.three{left:50%;transform:translateX(-50%);bottom:32px;width:52%;max-width:none}
+.ar-panel{position:absolute;z-index:4;inset:48px 10px 12px;background:#ffffffed;border:1px solid #d7cce8;border-radius:18px;padding:13px;overflow:auto;box-shadow:0 8px 30px #493e6633}
+.ar-panel h2{font-size:18px;margin:4px 0 10px}.ar-panel .task{background:white;padding:9px}.ar-panel .task strong{font-size:13px}.ar-panel .task small{font-size:11px}
+.ar-panel .task button{font-size:12px}.ar-panel select{margin-bottom:5px}
+.ar-close{position:absolute;right:10px;top:8px;z-index:5;padding:5px 9px;font-size:11px}
+@media(max-width:420px){.ar-stage{min-height:470px}.ar-float{font-size:12px}.ar-mentor{top:147px}}
+
+.sound-toggle{float:right;border:1px solid #d5c8e8;border-radius:22px;padding:5px 10px;font-size:12px;color:#55438b;background:#f6f0ff;cursor:pointer}.sound-toggle:focus-visible{outline:3px solid #7964d5;outline-offset:2px}
+/* Spatial AR overlays: the mentor remains visible in every pathway. */
+.ar-stage{min-height:560px;background:linear-gradient(155deg,#d6d4cb55,#b7aa9755),linear-gradient(0deg,#c3a98d 0 19%,#e7e1d5 19% 100%);perspective:850px}
+.ar-stage:before{background:linear-gradient(90deg,#fff5 0 10%,transparent 10% 90%,#fff5 90%),linear-gradient(0deg,transparent 19%,#a8998d44 19% 19.5%,transparent 19.5%);}
+.ar-mentor{top:190px;left:50%;width:112px;height:145px;background:#fff9;box-shadow:0 14px 26px #47365b3d;transform:translateX(-50%) rotateY(-4deg)}
+.ar-mentor .wizard{font-size:64px}
+.ar-float{transition:transform .15s ease;backdrop-filter:blur(8px);max-width:47%;font-size:12px}
+.ar-float:hover{transform:translateY(-3px)}
+.ar-float.one{left:2%;top:95px}.ar-float.two{right:2%;top:95px}.ar-float.three{left:50%;transform:translateX(-50%);bottom:37px;width:70%;max-width:70%}
+.ar-float.three:hover{transform:translateX(-50%) translateY(-3px)}
+.ar-orbit{position:absolute;z-index:3;width:47%;max-height:170px;overflow:auto;background:#fffef2ed;border:1px solid #c7b9e3;border-radius:17px;padding:10px;box-shadow:0 7px 22px #48325d30;color:#2e2842;backdrop-filter:blur(9px)}
+.ar-orbit.left{left:2%;top:82px}.ar-orbit.right{right:2%;top:82px}.ar-orbit.bottom{bottom:24px;left:5%;width:90%;max-height:148px}
+.ar-orbit h3{font-size:13px;margin:0 0 6px;color:#44345d}.ar-orbit p{font-size:11px;margin:5px 0}.ar-orbit button{font-size:11px;padding:8px;margin:3px 0;width:100%;color:#32264c;background:#fff}
+.ar-orbit select{font-size:12px;width:100%;padding:7px}
+.ar-orbit .task{margin:4px 0;padding:7px;background:#fff;border-radius:10px}
+.ar-orbit .task strong{font-size:12px}.ar-orbit .task small{font-size:10px}.ar-orbit .pill{font-size:9px}
+.ar-back{position:absolute;z-index:5;right:10px;top:8px;font-size:11px;padding:6px 10px;background:#fff}
+.ar-helper{position:absolute;top:48px;left:0;right:0;text-align:center;color:#382a4b;font-size:11px;font-weight:700;pointer-events:none}
+.ar-mentor-caption{position:absolute;top:346px;left:0;right:0;text-align:center;color:#433755;font-size:10px;font-weight:700}
+@media(max-width:420px){.ar-stage{min-height:540px}.ar-orbit{width:48%}.ar-mentor{top:190px;width:98px}.ar-mentor-caption{top:344px}}
+/* Reduce clutter, preserve environmental view and keep acceptance action visible. */
+.ar-stage{min-height:590px}
+.ar-mentor{top:210px}
+.ar-mentor-caption{top:367px}
+.ar-orbit{max-height:195px}
+.ar-config{width:65%;left:3%;top:96px;max-height:none}
+.ar-config .primary{padding:10px 6px;margin-top:5px;font-size:12px}
+.ar-summary{width:42%;left:2%;top:95px}
+.ar-suggestions{width:53%;right:2%;top:95px;max-height:310px}
+.ar-hint{bottom:18px;max-height:98px}
+.ar-accept{bottom:12px;max-height:none;padding:10px;}
+.ar-accept h3{margin:0 0 4px}.ar-accept p{margin:2px 0 6px}
+.ar-accept .primary{margin:0;padding:12px;display:block;width:100%;text-align:center;font-size:14px}
+.ar-stage:has(.ar-accept){min-height:610px}
+.ar-stage:has(.ar-accept) .ar-orbit.left,.ar-stage:has(.ar-accept) .ar-orbit.right{max-height:205px}
+@media(max-width:420px){.ar-stage{min-height:590px}.ar-stage:has(.ar-accept){min-height:630px}.ar-mentor{top:210px}.ar-mentor-caption{top:367px}.ar-config{width:70%}}
+
+/* Accessibility fix: never clip quest controls inside fixed-height AR cards. */
+.ar-stage{overflow:visible}
+.ar-orbit{overflow:visible;max-height:none}
+.ar-suggestions{max-height:none}
+.ar-stage:has(.ar-suggestions){min-height:980px}
+.ar-stage:has(.ar-suggestions) .ar-suggestions{width:59%;right:2%;top:94px}
+.ar-stage:has(.ar-suggestions) .ar-summary{width:35%;left:2%;top:94px}
+.ar-stage:has(.ar-suggestions) .ar-hint{bottom:14px}
+.ar-stage:has(.ar-accept){min-height:730px}
+.ar-stage:has(.ar-accept) .ar-orbit.left,.ar-stage:has(.ar-accept) .ar-orbit.right{max-height:none}
+.ar-stage:has(.ar-accept) .ar-accept{bottom:18px}
+.ar-stage:has(.ar-accept) .ar-orbit.left,.ar-stage:has(.ar-accept) .ar-orbit.right{top:105px}
+.ar-stage:has(.ar-accept) .ar-mentor{top:320px}
+.ar-stage:has(.ar-accept) .ar-mentor-caption{top:472px}
+.ar-stage:has(.ar-accept) textarea{min-height:92px;resize:vertical}
+.ar-orbit button:focus-visible,.ar-float:focus-visible{outline:3px solid #5946a4;outline-offset:2px}
+@media(max-width:560px){
+ .phone{padding:14px;border-width:6px}
+ .ar-stage:has(.ar-config),.ar-stage:has(.ar-suggestions),.ar-stage:has(.ar-accept){height:auto;min-height:0;padding:285px 12px 18px;display:flex;flex-direction:column;gap:12px}
+ .ar-stage:has(.ar-config) .ar-mentor,.ar-stage:has(.ar-suggestions) .ar-mentor,.ar-stage:has(.ar-accept) .ar-mentor{top:103px;left:50%}
+ .ar-stage:has(.ar-config) .ar-mentor-caption,.ar-stage:has(.ar-suggestions) .ar-mentor-caption,.ar-stage:has(.ar-accept) .ar-mentor-caption{top:250px}
+ .ar-stage:has(.ar-config) .ar-orbit,.ar-stage:has(.ar-suggestions) .ar-orbit,.ar-stage:has(.ar-accept) .ar-orbit{position:relative;inset:auto;left:auto;right:auto;top:auto;bottom:auto;width:100%;max-height:none;margin:0;flex-shrink:0}
+ .ar-stage:has(.ar-config) .ar-config{width:100%}
+ .ar-stage:has(.ar-suggestions) .ar-summary,.ar-stage:has(.ar-suggestions) .ar-suggestions{width:100%}
+ .ar-stage:has(.ar-accept) .ar-accept{order:3}
+ .ar-stage:has(.ar-accept) .ar-orbit.left{order:1}
+ .ar-stage:has(.ar-accept) .ar-orbit.right{order:2}
+ .ar-stage:has(.ar-suggestions) .ar-summary{order:1}
+ .ar-stage:has(.ar-suggestions) .ar-suggestions{order:2}
+ .ar-stage:has(.ar-suggestions) .ar-hint{order:3}
+ .ar-stage:has(.ar-config) .ar-hint{order:2}
+}
+
+/* Ensure floating-panel call-to-action buttons remain readable. */
+.ar-stage .ar-orbit button.primary,.ar-stage .ar-orbit button.primary:hover,.ar-stage .ar-orbit button.primary:focus-visible{background:#6854bd!important;color:white!important;border:2px solid #57429f!important;font-weight:800;opacity:1;min-height:46px;box-shadow:0 3px 8px #30245533}
+.ar-stage .ar-orbit button:not(.primary){background:#fff!important;color:#32264c!important}
+.ar-stage .ar-orbit .primary:focus-visible{outline:3px solid #f3c65b;outline-offset:2px}
+.ar-stage .ar-accept{z-index:6}
+
+/* Final responsive fix: spatial mentor stays visible; every control is in normal document flow. */
+.ar-stage:has(.ar-config),.ar-stage:has(.ar-suggestions),.ar-stage:has(.ar-accept){
+ display:flex!important;flex-direction:column!important;gap:12px!important;
+ height:auto!important;min-height:0!important;padding:290px 12px 18px!important;
+ overflow:visible!important;
+}
+.ar-stage:has(.ar-config) .ar-mentor,.ar-stage:has(.ar-suggestions) .ar-mentor,.ar-stage:has(.ar-accept) .ar-mentor{
+ top:105px!important;left:50%!important;width:112px!important;height:145px!important;
+}
+.ar-stage:has(.ar-config) .ar-mentor-caption,.ar-stage:has(.ar-suggestions) .ar-mentor-caption,.ar-stage:has(.ar-accept) .ar-mentor-caption{top:253px!important}
+.ar-stage:has(.ar-config) .ar-orbit,.ar-stage:has(.ar-suggestions) .ar-orbit,.ar-stage:has(.ar-accept) .ar-orbit{
+ position:relative!important;inset:auto!important;top:auto!important;bottom:auto!important;
+ left:auto!important;right:auto!important;width:100%!important;max-width:100%!important;
+ max-height:none!important;overflow:visible!important;flex-shrink:0!important;margin:0!important;
+ transform:none!important;
+}
+.ar-stage:has(.ar-config) .ar-config,.ar-stage:has(.ar-suggestions) .ar-summary,.ar-stage:has(.ar-accept) .ar-orbit.left{order:1!important}
+.ar-stage:has(.ar-config) .ar-hint,.ar-stage:has(.ar-suggestions) .ar-suggestions,.ar-stage:has(.ar-accept) .ar-orbit.right{order:2!important}
+.ar-stage:has(.ar-suggestions) .ar-hint,.ar-stage:has(.ar-accept) .ar-accept{order:3!important}
+.ar-stage .ar-orbit button.primary{
+ display:block!important;visibility:visible!important;opacity:1!important;
+ background-color:#5940ad!important;color:#ffffff!important;
+ border:2px solid #3b287d!important;min-height:52px!important;
+ width:100%!important;padding:13px 12px!important;
+ font-size:14px!important;font-weight:800!important;
+ line-height:1.3!important;text-align:center!important;
+ margin:12px 0 2px!important;box-shadow:0 4px 10px #35245c44!important;
+}
+.ar-stage .ar-orbit button.primary:hover{background-color:#442d95!important}
+.ar-stage .ar-orbit .task button:not(.primary){border:2px solid #6653aa!important;color:#352567!important;font-weight:750!important}
+.ar-stage .ar-orbit select{border:1px solid #9d92bd!important;min-height:44px!important}
+.ar-stage .ar-orbit textarea{min-height:110px!important;resize:vertical}
+button.ar-cta,button.ar-cta:hover,button.ar-cta:active{appearance:none!important;-webkit-appearance:none!important;background:#5940ad!important;background-image:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border:2px solid #3b287d!important;opacity:1!important;display:block!important;visibility:visible!important;min-height:52px!important;font-weight:800!important} 
+.reflection-card{background:#fffcf5;border:1px solid #d8cbea;border-radius:18px;padding:16px;margin:14px 0;color:#312747}
+.reflection-card h3{margin:10px 0}.reflection-card fieldset{border:0;padding:0;margin:16px 0}
+.reflection-card legend,.reflection-label{font-weight:750;display:block;margin:14px 0 7px}
+.reflection-card textarea{box-sizing:border-box;width:100%;min-height:74px;background:#fff;border:1px solid #bfb2d1;border-radius:12px;color:#302546;padding:11px;font:inherit}
+.rating-options{display:flex;gap:8px;justify-content:space-between;margin:10px 0}
+.rating-options label{flex:1;cursor:pointer;text-align:center}
+.rating-options input{position:absolute;opacity:0;width:1px;height:1px}
+.rating-options span{display:block;background:white;border:2px solid #bfb2d1;border-radius:12px;padding:11px 0;font-weight:800}
+.rating-options input:checked+span{background:#5940ad;color:white;border-color:#3b287d}
+.rating-options input:focus-visible+span{outline:3px solid #efac3d;outline-offset:2px}
+.reflection-card .ar-cta{background:#5940ad!important;color:#fff!important;-webkit-text-fill-color:#fff!important;display:block!important;min-height:52px!important;border:2px solid #3b287d!important;width:100%;margin-top:18px;font-weight:800}
+
+.journey-nav{display:inline-flex;align-items:center;gap:6px;margin:6px 0 12px;padding:10px 13px;border-radius:13px;border:2px solid #7961b9;background:#eee7ff;color:#39266b;font-weight:800;cursor:pointer}
+.journey-entry{position:relative;margin:0 0 14px 15px;padding:15px;border-radius:16px;border:1px solid #d7cbe8;background:#fffdf8;box-shadow:0 3px 12px #38254a12}
+.journey-timeline{border-left:3px solid #aa94d6;margin:16px 0;padding:0 0 0 8px}
+.journey-entry:before{content:"✦";position:absolute;left:-30px;top:17px;color:#7254b5;background:white}
+.journey-entry p{overflow-wrap:anywhere}.reflection-error{color:#9b2547;font-weight:700}
+</style></head><body><main class="layout"><section class="phone"><div class="brand">✦ WONDERSPARK <span class="eyebrow"> / TASK CUE</span></div><div class="bar"><div id="progress" style="width:15%"></div></div><button id="soundToggle" class="sound-toggle" type="button" onclick="toggleSound()" aria-pressed="true" title="Turn wizard sounds off">♫ Sound on</button><button class="quest-nav" id="questNav" onclick="go('active')">✦ Active quests <span id="activeCount">(0)</span></button><button class="journey-nav" type="button" onclick="go('journey')" aria-label="Open learning journey">📖 Learning journey <span id="journeyCount">(0)</span></button><div id="screen"></div></section><aside class="side"><h2>WonderSpark • Learning object</h2><p>Accept a small quest: a physical cue supports the transition from <strong>intention to task initiation</strong>. Explore three ways to organise what to do next, then practise beginning.</p><p class="muted">Prototype boundaries: simulated wizard-based AR cue; rule-based task suggestions and estimates (not live AI); session-only demonstration counters (not consent-based or persistent analytics).</p><div class="metric"><b id="accepted">0</b><span class="muted">Quests accepted</span></div><div class="metric"><b id="starts">0</b><span class="muted">Tasks started</span></div><div class="metric"><b id="finishes">0</b><span class="muted">Tasks completed</span></div><div class="metric"><b id="returns">0</b><span class="muted">Cue visits</span></div><h3>Learning design</h3><p class="muted">Mindful agency and self-regulation: the learner selects a pathway, chooses and adapts a first action, and reflects on their experience. Gradual release aims toward independent initiation. The guiding wizard is a personally meaningful mentor cue. Quests encourage participation without streaks or penalties; abandoning a quest is permitted. Reflection and optional check-ins support evaluation without penalising incomplete work.</p><button class="secondary" onclick="resetDemo()">Reset demo</button></aside></main><script>
+const samples=[
+{id:1,project:'Educational software',title:'Sketch the first learning activity',minutes:20,first:'Open a notebook and sketch one interaction a learner could try.',why:'Explore how an educational computer program might help someone learn.'},
+{id:2,project:'Educational software',title:'Explore a beginner coding example',minutes:15,first:'Open one small HTML example and change a heading.',why:'Reconnect with the possibility of building your own educational programs.'},
+{id:3,project:'Personal writing',title:'Write freely for five minutes',minutes:5,first:'Open your notebook and write whatever is on your mind for five minutes.',why:'Make space for writing that is just for you.'},
+{id:4,project:'Personal writing',title:'Collect an idea for a story',minutes:10,first:'Write three sentences about something that caught your attention today.',why:'Follow your curiosity without needing a finished piece.'},
+{id:5,project:'Workshop alternatives',title:'Imagine a different learning format',minutes:20,first:'Write down one way you could support learning without running your usual workshop.',why:'Explore professional possibilities that feel more interesting to you.'},
+{id:6,project:'Workshop alternatives',title:'List what still energises you',minutes:10,first:'Name two parts of your education work you still enjoy.',why:'Notice what you might want to carry into your next direction.'}
+];
+// Three short, original wand-like tones are synthesized locally (no audio files or network).
+let soundEnabled=true;
+let audioContext=null;
+function toggleSound(){
+ soundEnabled=!soundEnabled;
+ const b=document.getElementById('soundToggle');
+ b.textContent=soundEnabled?'♫ Sound on':'♫ Sound off';
+ b.setAttribute('aria-pressed',String(soundEnabled));
+ b.title=soundEnabled?'Turn wizard sounds off':'Turn wizard sounds on';
+}
+function playWandSound(path){
+ if(!soundEnabled)return;
+ try{
+  const AudioCtor=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtor)return;
+  if(!audioContext)audioContext=new AudioCtor();
+  if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
+  const now=audioContext.currentTime;
+  const notes={time:[784,1046.5,1318.5],project:[523.25,783.99,1174.66],task:[659.25,987.77,1567.98]}[path];
+  if(!notes)return;
+  notes.forEach((freq,i)=>{
+   const start=now+i*0.085;
+   const osc=audioContext.createOscillator();
+   const gain=audioContext.createGain();
+   osc.type=i===2?'sine':'triangle';
+   osc.frequency.setValueAtTime(freq*0.96,start);
+   osc.frequency.exponentialRampToValueAtTime(freq*1.03,start+0.13);
+   gain.gain.setValueAtTime(0.0001,start);
+   gain.gain.exponentialRampToValueAtTime(0.065,start+0.018);
+   gain.gain.exponentialRampToValueAtTime(0.0001,start+0.28);
+   osc.connect(gain);gain.connect(audioContext.destination);
+   osc.start(start);osc.stop(start+0.3);
+  });
+ }catch(e){/* Sound is optional; navigation still works. */}
+}
+function choosePathway(path){playWandSound(path);route=path;go('configure')}
+let reflections=[];let taskFocus='all';let tasks=samples.map(x=>({...x,done:false,status:'available'})),stage='cue',route='time',project='Educational software',minutes=15,selected=null,startAt=null,events=[],visits=0,accepted=0;const el=document.getElementById('screen');function log(type){events.push({type,time:new Date().toISOString()});metrics()}function metrics(){document.getElementById('accepted').textContent=accepted;document.getElementById('starts').textContent=events.filter(x=>x.type==='start').length;document.getElementById('finishes').textContent=events.filter(x=>x.type==='complete').length;document.getElementById('returns').textContent=visits}function go(s){stage=s;document.getElementById('progress').style.width=({cue:15,choose:35,configure:48,results:65,action:80,reflect:90,reflection:95,reflected:100,active:85})[s]+'%';render()}function arFrame(inner='', mode='pathways'){
+ const buttons=mode==='pathways'?`<button class="ar-float one" onclick="choosePathway('time')">◷ Time<small>What fits now?</small></button><button class="ar-float two" onclick="choosePathway('project')">◇ Project<small>Follow a focus</small></button><button class="ar-float three" onclick="choosePathway('task')">✦ Task<small>Choose an activity</small></button>`:'';
+ return `<div class="ar-stage"><span class="ar-tag">SIMULATED AR · SPATIAL OVERLAYS</span><div class="ar-helper">Digital choices appear around the physical mentor</div><div class="ar-mentor"><div class="wizard">🧙‍♂️</div><small>YOUR MENTOR</small></div><div class="ar-mentor-caption">Your physical cue stays in view</div>${buttons}${inner}</div>`;
+}
+function floatingConfigure(){
+ const selector=route==='time'?`<h3>◷ Time available</h3><p>How much time feels available right now?</p><select aria-label="Available time" onchange="minutes=+this.value">${[5,10,15,20,30,60].map(m=>`<option value="${m}" ${minutes===m?'selected':''}>${m} minutes</option>`).join('')}</select>`:route==='project'?`<h3>◇ Choose a project</h3><p>Which project has your attention?</p><select aria-label="Project" onchange="project=this.value">${['Educational software','Personal writing','Workshop alternatives'].map(p=>`<option ${project===p?'selected':''}>${p}</option>`).join('')}</select>`:`<h3>✦ Task focus</h3><p>What kind of activity appeals right now?</p><select aria-label="Task focus" onchange="taskFocus=this.value">${[['all','Any activity'],['write','Writing or drafting'],['build','Making or developing'],['reflect','Reflecting or exploring']].map(([v,l])=>`<option value="${v}" ${taskFocus===v?'selected':''}>${l}</option>`).join('')}</select>`;
+ return arFrame(`<button class="ar-back" onclick="go('choose')">✕ Pathways</button><div class="ar-orbit left ar-config">${selector}<button class="primary ar-cta" style="background:#5940ad!important;color:#fff!important;border:2px solid #3b287d!important;display:block!important;opacity:1!important" onclick="go('results')">Reveal suggested quests ✦</button></div><div class="ar-orbit bottom ar-hint"><h3>Your mentor says</h3><p>Choose what suits you first. Your quests will appear when you're ready.</p></div>`,'configure');
+}
+function floatingResults(){
+ const available=tasks.filter(t=>t.status==='available'&&(route==='time'?t.minutes<=minutes:route==='project'?t.project===project:taskFocus==='all'?true:taskFocus==='write'?[1,3].includes(t.id):taskFocus==='build'?[2,4].includes(t.id):[5,6].includes(t.id)));
+ const label=route==='time'?`${minutes} minutes`:route==='project'?project:({all:'Any activity',write:'Writing or drafting',build:'Making or developing',reflect:'Reflecting or exploring'}[taskFocus]);
+ const cards=available.map(t=>`<div class="task"><span class="pill">${escapeHtml(t.project)} · ~${t.minutes} min</span><strong>${escapeHtml(t.title)}</strong><button onclick="selectTask(${t.id})">View quest →</button></div>`).join('')||'<p>No matching tasks. Try another choice.</p>';
+ return arFrame(`<button class="ar-back" onclick="go('configure')">✕ Back</button><div class="ar-orbit left ar-summary"><h3>Your ${route} choice</h3><p><strong>${escapeHtml(label)}</strong></p><button onclick="go('configure')">Change choice</button></div><div class="ar-orbit right ar-suggestions"><h3>Suggested quests</h3>${cards}</div><div class="ar-orbit bottom ar-hint"><p>Choose a quest to see its meaning and first action.</p></div>`,'results');
+}
+function floatingQuest(t){
+ return arFrame(`<button class="ar-back" onclick="go('results')">✕ Back</button><div class="ar-orbit left"><h3>✦ Available quest</h3><strong>${escapeHtml(t.title)}</strong><p>${escapeHtml(t.project)} · ~${t.minutes} min</p><p>${escapeHtml(t.why)}</p></div><div class="ar-orbit right"><h3>First action</h3><p>Make the first step your own.</p><textarea id="firstAction" rows="3" aria-label="Edit first action">${escapeHtml(t.first)}</textarea></div><div class="ar-orbit bottom ar-accept"><h3>Accept your quest?</h3><p>Choose to begin when you're ready. You can abandon without penalty.</p><button class="primary ar-cta" style="background:#5940ad!important;color:#fff!important;border:2px solid #3b287d!important;display:block!important;opacity:1!important" onclick="begin()">Accept quest & begin →</button></div>`,'quest');
+}
+function render(){document.getElementById('activeCount').textContent='('+tasks.filter(t=>t.status==='active').length+')';document.getElementById('journeyCount').textContent='('+reflections.length+')';if(stage==='cue'){el.innerHTML=`<p class="eyebrow">01 / RECOGNISE THE CUE</p><h1>See the cue.<br>Find a way in.</h1><p class="muted">Imagine pointing your phone at your guiding wizard: a personally meaningful mentor from your own journey.</p><div class="cue"><div class="object"><div class="wizard">🧙‍♂️</div><small>YOUR GUIDING WIZARD</small></div><div class="overlay">AR-style overlay • simulated</div></div><p>It isn't asking you to finish everything. Just to find where to begin.</p><button class="primary" onclick="visits++;log('cue');go('choose')">Recognise cue →</button>`}else if(stage==='choose'){el.innerHTML=`<p class="eyebrow">02 / AUGMENTED CHOICES</p><h1>Follow your current pull.</h1><p class="muted">The three choices float around your wizard in the camera view. Select a doorway.</p>`+arFrame('')+`<button class="back" onclick="go('cue')">← Back to cue</button>`}else if(stage==='configure'){el.innerHTML=`<p class="eyebrow">03 / CHOOSE YOUR FOCUS</p>`+floatingConfigure()}else if(stage==='results'){el.innerHTML=`<p class="eyebrow">03 / SPATIAL PATHWAY</p>`+floatingResults()}else if(stage==='action'){let t=tasks.find(x=>x.id===selected);el.innerHTML=`<p class="eyebrow">04 / QUEST AROUND THE MENTOR</p>`+floatingQuest(t)}else if(stage==='active'){let active=tasks.filter(t=>t.status==='active');el.innerHTML=`<p class="eyebrow">QUEST JOURNAL</p><h1>Your active quests</h1><p class="muted">These are invitations, not obligations. You can return to a quest or let it go without penalty.</p>${active.length?active.map(t=>`<div class="task"><span class="pill">${escapeHtml(t.project)} · ~${t.minutes} min</span><strong>${escapeHtml(t.title)}</strong><p>${escapeHtml(t.first)}</p><div class="quest-actions"><button onclick="resumeQuest(${t.id})">Continue quest →</button><button class="danger" onclick="abandonQuest(${t.id})">Abandon quest</button></div></div>`).join(''):'<div class="quest-empty">No active quests right now. You can choose one whenever you feel the pull.</div>'}<button class="primary" onclick="go('choose')">Explore quests →</button>`}else if(stage==='journey'){el.innerHTML=`<p class="eyebrow">YOUR LEARNING JOURNEY</p><h1>What you're learning about starting</h1><p class="muted">A single place to revisit completed quests, notice patterns and carry strategies into the next attempt.</p>${reflections.length?`<div class="journey-timeline">${reflections.slice().reverse().map((r,i)=>`<article class="journey-entry"><span class="pill">${escapeHtml(r.project)}</span><h3>${escapeHtml(r.title)}</h3><p class="muted">${escapeHtml(r.date)} · Ease of initiation: <strong>${r.ease ? r.ease+'/5':'Not rated'}</strong></p><p><strong>What I completed</strong><br>${escapeHtml(r.completed||'Not recorded')}</p><p><strong>How I went</strong><br>${escapeHtml(r.assessment||'Not recorded')}</p>${r.next?`<p><strong>Next time</strong><br>${escapeHtml(r.next)}</p>`:''}</article>`).join('')}</div>`:'<div class="reflection-card"><h3>Your journey starts with a quest</h3><p>Complete a quest and save a reflection to see your learning here.</p></div>'}<button class="primary ar-cta" onclick="go('choose')">Explore a pathway →</button>`}else if(stage==='reflection'){let t=tasks.find(x=>x.id===selected);el.innerHTML=`<p class="eyebrow">06 / REFLECT ON YOUR LEARNING</p><h1>What did this quest teach you?</h1><p class="muted">Your mentor invites you to notice what helped you begin, what you achieved, and what you might change next time.</p><div class="reflection-card"><span class="pill">${escapeHtml(t.project)}</span><h3>${escapeHtml(t.title)}</h3><div id="reflectionForm"><fieldset><legend>How easy was it to initiate this quest?</legend><p class="muted">1 = very difficult · 5 = very easy</p><div class="rating-options">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="ease" value="${n}"><span>${n}</span></label>`).join('')}</div></fieldset><label class="reflection-label" for="completedTasks">What tasks or steps were you able to complete?</label><textarea id="completedTasks" rows="3" placeholder="Describe what you did, including any partial progress."></textarea><label class="reflection-label" for="selfAssessment">How do you think you went? What helped or got in the way?</label><textarea id="selfAssessment" rows="3" placeholder="Notice your learning and how you approached the quest."></textarea><label class="reflection-label" for="nextTime">What might you try next time? <span class="muted">(optional)</span></label><textarea id="nextTime" rows="2" placeholder="One adjustment or strategy to carry forward."></textarea><p id="reflectionError" role="alert" class="reflection-error" hidden>Please select a rating from 1 to 5.</p><button type="button" onclick="saveReflection()" class="primary ar-cta">Save reflection & finish ✦</button></div><button class="back" onclick="skipReflection()">Skip reflection for now</button></div>`}else if(stage==='reflected'){let t=tasks.find(x=>x.id===selected);el.innerHTML=`<p class="eyebrow">07 / LEARNING REFLECTION</p><h1>Quest complete ✦</h1><div class="reflection-card"><h3>${escapeHtml(t.title)}</h3>${t.reflection?`<p><strong>Ease of initiation:</strong> ${t.reflection.ease}/5</p><p><strong>What I completed:</strong> ${escapeHtml(t.reflection.completed||'Not recorded')}</p><p><strong>My assessment:</strong> ${escapeHtml(t.reflection.assessment||'Not recorded')}</p>${t.reflection.next?`<p><strong>Next time:</strong> ${escapeHtml(t.reflection.next)}</p>`:''}`:'<p>You completed the quest. Reflection was skipped.</p>'}<p class="muted">Noticing your strategies can help you choose and initiate future activities more independently.</p></div><button class="primary ar-cta" onclick="go('choose')">Choose another pathway →</button>`}else if(stage==='reflect'){let t=tasks.find(x=>x.id===selected);let elapsed=Math.max(0,Math.round((Date.now()-startAt)/60000));el.innerHTML=`<p class="eyebrow">05 / QUEST IN PROGRESS</p><h1>Quest accepted!</h1><div class="quest-banner"><span class="quest-stamp">✦ QUEST ACTIVE</span><strong>${escapeHtml(t.title)}</strong><span>One first action at a time.</span></div><p>Starting is the learning moment. Completion is optional.</p><div class="task"><b>${escapeHtml(t.title)}</b><p class="muted">Session running for about ${elapsed} minute${elapsed===1?'':'s'}.</p></div><p>What happened when you tried the first action?</p><div class="choices"><button onclick="finish('complete')">★ Quest complete</button><button onclick="finish('progress')">↗ Quest in progress</button><button onclick="finish('stuck')">↺ Adapt my quest</button></div><button class="back" onclick="go('active')">← View active quests</button>`}
+}
+function resumeQuest(id){selected=id;startAt=Date.now();log('resume');go('reflect')}function abandonQuest(id){const t=tasks.find(x=>x.id===id);if(!t||t.status!=='active')return;t.status='available';log('abandon');if(selected===id)selected=null;go('active')}function selectTask(id){selected=id;log('select');go('action')}function begin(){const t=tasks.find(x=>x.id===selected);if(t.status==='active'){go('active');return}t.status='active';t.first=document.getElementById('firstAction').value.trim()||t.first;startAt=Date.now();accepted++;log('accept');log('start');go('reflect')}function saveReflection(){
+ const rating=document.querySelector('input[name="ease"]:checked');
+ if(!rating){const error=document.getElementById('reflectionError');error.hidden=false;error.scrollIntoView({block:'nearest'});return}
+ const t=tasks.find(x=>x.id===selected);if(!t)return;
+ t.reflection={ease:Number(rating.value),completed:document.getElementById('completedTasks').value.trim(),assessment:document.getElementById('selfAssessment').value.trim(),next:document.getElementById('nextTime').value.trim()};
+ reflections.push({id:t.id,title:t.title,project:t.project,date:new Date().toLocaleDateString(),...t.reflection});
+ try{localStorage.setItem('wondersparkLearningJourney',JSON.stringify(reflections))}catch(e){}
+ log('reflection');go('journey');
+}
+function skipReflection(){go('reflected')}function finish(type){if(type==='complete'){const t=tasks.find(x=>x.id===selected);t.done=true;t.status='completed';log('complete');go('reflection');return}else log(type);if(type==='stuck'){let t=tasks.find(x=>x.id===selected);t.first='Open the materials for “'+t.title+'” and spend two minutes looking at what is there.';go('action');return}go('choose')}function resetDemo(){tasks=samples.map(x=>({...x,done:false,status:'available'}));events=[];visits=0;accepted=0;selected=null;metrics();go('cue')}function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}try{const saved=JSON.parse(localStorage.getItem('wondersparkLearningJourney')||'[]');if(Array.isArray(saved))reflections=saved.filter(r=>r&&typeof r.title==='string').slice(-100)}catch(e){}metrics();render();
+</script></body></html>
